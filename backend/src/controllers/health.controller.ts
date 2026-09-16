@@ -6,3 +6,4 @@ export const healthCheck = (req:Request,res:Response) =>{
          message
      });
 };
+    
