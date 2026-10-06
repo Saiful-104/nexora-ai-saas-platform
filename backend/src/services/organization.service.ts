@@ -1,48 +1,38 @@
 import { AppError } from "../errors/AppError.js";
-import prisma from "../lib/prisma.js";
 
-export const createOrganization = async (name:string ) =>{
-   const organization = await prisma.organization.create({
-    data:{
-      name,
-    }
-   })
-   return organization;
-}
+import {
+  createOrganization as createOrganizationRepository,
+  getOrganizationById as getOrganizationByIdRepository,
+  updateOrganization as updateOrganizationRepository,
+} from "../repositories/organization.repository.js";
 
-export const getOrganizationById = async(id:string)=>{
-  const organization = await prisma.organization.findUnique({
-    where:{
-      id
-    }
-  });
+export const createOrganization = async (name: string) => {
+  const organization = await createOrganizationRepository(name);
 
-  if(!organization){
-  throw new AppError("Organization not found", 404);
-}
   return organization;
-}
+};
 
-export const updateOrganization= async (
-  id:string,
-  data:{name?:string}
-)=>{
-  const organization = await prisma.organization.findUnique({
-    where:{
-      id,
-    }
-  });
+export const getOrganizationById = async (id: string) => {
+  const organization = await getOrganizationByIdRepository(id);
 
-  if(!organization){
+  if (!organization) {
     throw new AppError("Organization not found", 404);
   }
 
-  const updatedOrganization = await prisma.organization.update({
-    where:{
-      id,
-    },
-    data,
-  });
+  return organization;
+};
+
+export const updateOrganization = async (
+  id: string,
+  data: { name?: string }
+) => {
+  const organization = await getOrganizationByIdRepository(id);
+
+  if (!organization) {
+    throw new AppError("Organization not found", 404);
+  }
+
+  const updatedOrganization = await updateOrganizationRepository(id, data);
 
   return updatedOrganization;
-}
+};

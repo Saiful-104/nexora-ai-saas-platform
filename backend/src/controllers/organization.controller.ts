@@ -13,6 +13,7 @@ import {
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/sendResponse.js";
+import { AppError } from "../errors/AppError.js";
 
 export const createOrganizationController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -29,9 +30,17 @@ export const createOrganizationController = asyncHandler(
   }
 );
 
+
+
 export const getOrganizationByIdController = asyncHandler(
   async (req: Request, res: Response) => {
-       const organization = await getOrganizationById(req.params.id);
+    const id = req.params.id;
+
+    if (typeof id !== "string") {
+      throw new AppError("Invalid organization ID", 400);
+    }
+
+    const organization = await getOrganizationById(id);
 
     sendResponse(
       res,
@@ -40,12 +49,18 @@ export const getOrganizationByIdController = asyncHandler(
       organization
     );
   }
-)
+);
 
 export const updateOrganizationController = asyncHandler(
   async (req: Request, res: Response) => {
     const id = req.params.id;
+
+    if (typeof id !== "string") {
+      throw new AppError("Invalid organization ID", 400);
+    }
+
     const validatedData = updateOrganizationSchema.parse(req.body);
+
     const organization = await updateOrganization(id, validatedData);
 
     sendResponse(
